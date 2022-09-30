@@ -1,8 +1,11 @@
 body{
     width: 100%;
 }
-main{
+/* main{
 }
 section{
+} */
+button :hover{
+    background-color: black;
 }
 

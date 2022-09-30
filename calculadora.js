@@ -1,54 +1,80 @@
 let butons = document.getElementsByTagName("button");
 let operations = [];
-let show = "";
 let number = "";
-let entrada= document.getElementById("entrada");
-
+let entrada = document.getElementById("entrada");
+// let tabla = [
+//  [10,["0000","0043","0086","0128","0170","0212","0253","0294","0334","0374"]], 
+// [11,["0414","0453","0492","0531","0569","0607","0645","0682","0719","0755"]],
+// ]
 recognize = (e) => {
-  if(e.target.value=="CE"){
-    entrada.value = "";
-    operations=[];
-    number="";
-  }
-   if(e.target.value=="C"){
-   show= entrada.value;
-   entrada.value=show.slice(0,-1);
-   console.log(entrada.value);
-   if(entrada.value==""){
-    number="";
-   }
-   operations=[];
-  }
-  if (e.target.value.match("(?=[-+*/()%^π=])")) {
-    entrada.value = "";
-    operations.push(Number(number));
+  if (e.target.value.match("(?=[-+*/log()%^π])")) {
+    //  entrada.value = e.target.value;
+    // operations.push(Number(number));
     operations.push(e.target.value);
-    number = "";
-    console.log(operations);
-    if (e.target.value == "=") {
-      resolve(operations);
-      entrada.value = resolve(operations);
-      console.log(entrada.value)
+     number += e.target.value;
+    // number = "";
+   } if (e.target.value == "=") {//si oprimio igual entonces mostrar el numero solo
+      // resolve(operations);
+       entrada.value = resolve(operations);
     }
-  } else if (e.target.value.match("^[0-9]+$")) {
-    number += e.target.value;
-    console.log(number);
-    entrada.value = number;
-  } else console.log(operations);
+  else if (e.target.value.match("^[0-9]+$")) {
+     
+     number += e.target.value;
+    operations.push(e.target.value);
+
+    // entrada.value = number;
+  } else restOperations(e);
+  entrada.value=number
+   if(operations.length>=2){
+
+    entrada.value = resolve(operations);
+   }
+
 };
+//TODO revisar que todas las funciones anden bien ;
+//hacer algo diferente con el signo igual, reemplazar n/n por raiz
+//hacer un hover sobre los botones
+
+erase = () => {
+  number = "";
+  operations = [];
+};
+
+restOperations = (e) => {
+  switch (e.target.value) {
+    case "CE":
+      entrada.value = "";
+      erase();
+      break;
+    case "C":
+      entrada.value = entrada.value.slice(0, -1);
+      if (entrada.value == "") erase();
+      break;
+  }
+};
+
 resolve = (op) => {
-  if (op.length <=4) {
+  // if (op.length <= 3) {
     switch (op[1]) {
       case "+":
-        return op[0] + op[2];
+        return Number(op[0]) + Number(op[2]);
       case "-":
         return op[0] - op[2];
       case "*":
         return op[0] * op[2];
       case "/":
         return op[0] / op[2];
+      case "%":
+        return op[0]/100;
+      case "^":
+        let result=1;
+        for(let i=0;i<op[2];i++){
+          result=op[0]*result
+        }
+        return result;
+      default : return (Math.log(op[1]) / Math.log(10))
     }
-  }
+  // }
 };
 
 for (let i = 0; i < butons.length; i++) {
