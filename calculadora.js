@@ -2,38 +2,27 @@ let butons = document.getElementsByTagName("button");
 let operations = [];
 let number = "";
 let entrada = document.getElementById("entrada");
-// let tabla = [
-//  [10,["0000","0043","0086","0128","0170","0212","0253","0294","0334","0374"]], 
-// [11,["0414","0453","0492","0531","0569","0607","0645","0682","0719","0755"]],
-// ]
+let special = false;
+//problema log entra al else if pero no guarda en operations ni pushea nada
+
 recognize = (e) => {
-  if (e.target.value.match("(?=[-+*/log()%^π])")) {
-    //  entrada.value = e.target.value;
-    // operations.push(Number(number));
+  if (!e.target.value.match("(?=[CCE])")) {
+    if (e.target.value.match("(?=[log%π])")) special = true;
     operations.push(e.target.value);
-     number += e.target.value;
-    // number = "";
-   } if (e.target.value == "=") {//si oprimio igual entonces mostrar el numero solo
-      // resolve(operations);
-       entrada.value = resolve(operations);
-    }
-  else if (e.target.value.match("^[0-9]+$")) {
-     
-     number += e.target.value;
-    operations.push(e.target.value);
-
-    // entrada.value = number;
+    number += e.target.value; 
+    entrada.value = number;
   } else restOperations(e);
-  entrada.value=number
-   if(operations.length>=2){
-
+  if (operations.length == 2 && special) {
+    special=false
+    entrada.value = operationsSpecials(e,operations);
+  } else if (operations.length > 3 && !special) {
     entrada.value = resolve(operations);
-   }
-
+  }
 };
 //TODO revisar que todas las funciones anden bien ;
 //hacer algo diferente con el signo igual, reemplazar n/n por raiz
 //hacer un hover sobre los botones
+// TODO falla poner mas de 3 numeros o un numero>2 cifras par operar
 
 erase = () => {
   number = "";
@@ -48,33 +37,38 @@ restOperations = (e) => {
       break;
     case "C":
       entrada.value = entrada.value.slice(0, -1);
+      operations.pop();
       if (entrada.value == "") erase();
       break;
   }
 };
-
+operationsSpecials = (e,op) => {
+  switch (op[0]) {
+    case "log":
+      return Math.log(op[1]) / Math.log(10);
+    case "%":
+      return op[1] / 100;
+    case "π":
+      return op[1]*3.141583104326456
+  }
+};
 resolve = (op) => {
-  // if (op.length <= 3) {
-    switch (op[1]) {
-      case "+":
-        return Number(op[0]) + Number(op[2]);
-      case "-":
-        return op[0] - op[2];
-      case "*":
-        return op[0] * op[2];
-      case "/":
-        return op[0] / op[2];
-      case "%":
-        return op[0]/100;
-      case "^":
-        let result=1;
-        for(let i=0;i<op[2];i++){
-          result=op[0]*result
-        }
-        return result;
-      default : return (Math.log(op[1]) / Math.log(10))
-    }
-  // }
+  switch (op[1]) {
+    case "+":
+      return Number(op[0]) + Number(op[2]);
+    case "-":
+      return op[0] - op[2];
+    case "*":
+      return op[0] * op[2];
+    case "/":
+      return op[0] / op[2];
+    case "^":
+      let result = 1;
+      for (let i = 0; i < op[2]; i++) {
+        result = op[0] * result;
+      }
+      return result;
+  }
 };
 
 for (let i = 0; i < butons.length; i++) {
