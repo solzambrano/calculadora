@@ -12,4 +12,6 @@ button :hover{
     margin-bottom: 0rem!important;
     height: 60px;
 }
-
+#calculadora{
+    width: 25%!important;
+}
