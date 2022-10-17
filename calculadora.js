@@ -1,13 +1,15 @@
 let butons = document.getElementsByTagName("button");
 let number = "";
 let entrada = document.getElementById("entrada");
-let operacion = "";
+let operation = "";
 let cut = [];
+let equalDone=false;
+let equal=document.getElementById("equal")
 
 recognize = (e) => {
   if (!e.target.value.match("(?=[CCE])")) {
     if (
-      e.target.value.match("(?=[log%π])") ||
+      e.target.value.match("(?=[log%π√x])") ||
       e.target.value.match("(?=[-+*/()^])")
     ) {
       operation = e.target.value;
@@ -15,21 +17,16 @@ recognize = (e) => {
     number += e.target.value;
     entrada.value = number;
   } else restOperations(e);
-  if (e.target.value.match("=")) {
+  if (e.target.value.match("=") && cut.length!=1) {
     cut = number.split(`${operation}`);
-    console.log("si entre en =", cut);
     cut[1] = cut[1].slice(0, -1);
-    console.log(cut[1]);
-    console.log(operation);
     if (cut[0] == "") {
       entrada.value = `${number} ${operationsSpecials(cut[1], operation)}`;
     } else {
-      console.log(number);
       entrada.value = `${number} ${resolve(operation, cut)}`;
     }
   }
 };
-
 erase = () => {
   number = "";
   operations = [];
@@ -48,6 +45,7 @@ restOperations = (e) => {
       break;
   }
 };
+
 operationsSpecials = (num, op) => {
   switch (op) {
     case "log":
@@ -55,7 +53,9 @@ operationsSpecials = (num, op) => {
     case "%":
       return num / 100;
     case "π":
-      return num * 3.141583104326456;
+      return num * Math.PI;
+    case "√x":
+      return Math.sqrt(num)
   }
 };
 resolve = (op, num) => {
@@ -67,7 +67,9 @@ resolve = (op, num) => {
     case "*":
       return num[0] * num[1];
     case "/":
+      if(num[1]!=0){
       return num[0] / num[1];
+      }else return "ERROR"
     case "^":
       let result = 1;
       for (let i = 0; i < num[1]; i++) {
@@ -80,8 +82,7 @@ resolve = (op, num) => {
 for (let i = 0; i < butons.length; i++) {
   butons[i].addEventListener("click", recognize);
 }
-
+equal.addEventListener("click",verificationCantEquals)
+document.getElementById("entrada").addEventListener("keyup",recognize)
 //TODO agregar controles para que no se apriete igual mas de una vez
-//division por cero
-//aplicar la raiz
-//y para la version 2, hacer operaciones algebraicas
+//y para la version 2, hacer operaciones algebraicas, revisar el target del input
